@@ -1,26 +1,26 @@
 package com.example.android.unscramble.ui.game
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
-    private var _score = 0
-    val score: Int
+    private val _score = MutableLiveData(0)
+    val score: LiveData<Int>
         get() = _score
 
-    private var _currentWordCount = 0
-    val currentWordCount: Int
+    private val _currentWordCount = MutableLiveData(0)
+    val currentWordCount: LiveData<Int>
         get() = _currentWordCount
 
-    private lateinit var _currentScrambledWord: String
-    val currentScrambledWord: String
+    private val _currentScrambledWord = MutableLiveData<String>()
+    val currentScrambledWord: LiveData<String>
         get() = _currentScrambledWord
 
     private var wordsList: MutableList<String> = mutableListOf()
     private lateinit var currentWord: String
 
     init {
-        Log.d("GameFragment", "GameViewModel created !")
         getNextWord()
     }
 
@@ -36,8 +36,8 @@ class GameViewModel : ViewModel() {
         if (wordsList.contains(currentWord)) {
             getNextWord()
         } else {
-            _currentScrambledWord = String(tempWord)
-            ++_currentWordCount
+            _currentScrambledWord.postValue(String(tempWord))
+            _currentWordCount.postValue(currentWordCount.value!! + 1)
             wordsList.add(currentWord)
         }
     }
@@ -47,7 +47,7 @@ class GameViewModel : ViewModel() {
      * Updates the next word.
      */
     fun nextWord(): Boolean {
-        return if (currentWordCount < MAX_NO_OF_WORDS) {
+        return if (currentWordCount.value!! < MAX_NO_OF_WORDS) {
             getNextWord()
             true
         } else false
@@ -57,7 +57,7 @@ class GameViewModel : ViewModel() {
      * Increase the score of the player when he spelled the word correctly.
      */
     private fun increaseScore() {
-        _score += SCORE_INCREASE
+        _score.postValue(_score.value!! + SCORE_INCREASE)
     }
 
     fun isWordCorrect(playerWord: String): Boolean {
@@ -72,14 +72,9 @@ class GameViewModel : ViewModel() {
      * Re-initializes the game data to restart the game.
      */
     fun reinitializeData() {
-        _score = 0
-        _currentWordCount = 0
+        _score.postValue(0)
+        _currentWordCount.postValue(0)
         wordsList.clear()
         getNextWord()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("GameFragment", "GameViewModel destroyed !")
     }
 }
