@@ -33,7 +33,7 @@ class AmphibianDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         val binding = FragmentAmphibianDetailBinding.inflate(inflater)
         binding.lifecycleOwner = this
